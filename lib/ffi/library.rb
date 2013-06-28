@@ -36,8 +36,10 @@ module FFI
     lib = lib.to_s unless lib.kind_of?(String)
     lib = Library::LIBC if lib == 'c'
 
-    if lib && File.basename(lib) == lib
-      lib = Platform::LIBPREFIX + lib unless lib =~ /^#{Platform::LIBPREFIX}/
+    if lib && File.extname(File.split(lib)[1]) == ""
+      unless (lib =~ /^#{Platform::LIBPREFIX}/) || File.realdirpath(lib) == lib
+        lib = Platform::LIBPREFIX + lib
+      end
       r = Platform::IS_GNU ? "\\.so($|\\.[1234567890]+)" : "\\.#{Platform::LIBSUFFIX}$"
       lib += ".#{Platform::LIBSUFFIX}" unless lib =~ /#{r}/
     end
